@@ -38,7 +38,7 @@ services:
       - ./config:/config
     environment:
       - EMAIL=adnan.kamili@gmail.com
-      - URL=on-premise.cryptlex.com
+      - URL=on-prem.cryptlex.com
     depends_on:
       - webapi
     ports:
