@@ -31,21 +31,6 @@ services:
     networks:
       - backend
     restart: unless-stopped
-
-  loadbalancer1: 
-    image: nginx:alpine
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    environment:
-      - APPLICATION_URL=${WEB_API_URL}
-    depends_on:
-      - webapi
-    ports:
-      - 80:80
-      - 443:443
-    networks:
-      - backend
-    restart: unless-stopped
   
   loadbalancer: 
     image: linuxserver/letsencrypt
