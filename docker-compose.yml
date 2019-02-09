@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
 
   geoip:
-    image: quay.io/cryptlex/freegeoip:3.5.0
+    image: cryptlex/freegeoip:3.5.0
     ports:
       - 8080
     networks:
@@ -48,7 +48,7 @@ services:
     restart: unless-stopped
 
   webapi:
-    image: quay.io/cryptlex/cryptlex-web-api-enterprise:3.10.1
+    image: cryptlex/cryptlex-web-api-enterprise:3.10.1
     depends_on:
       - db
       - geoip
@@ -60,7 +60,7 @@ services:
       - 5000
 
   webapp:
-    image: quay.io/cryptlex/cryptlex-web-app:3.0.0
+    image: cryptlex/cryptlex-web-app-enterprise:3.0.0
     depends_on:
       - webapi
     environment:
