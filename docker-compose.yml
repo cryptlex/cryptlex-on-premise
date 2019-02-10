@@ -37,7 +37,7 @@ services:
     volumes:
       - ./config:/config
     environment:
-      - EMAIL=adnan.kamili@gmail.com
+      - EMAIL=joe.doe@mycompany.com
       - URL=${WEB_DOMAIN}
     depends_on:
       - webapi
