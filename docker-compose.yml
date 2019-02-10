@@ -38,7 +38,7 @@ services:
       - ./config:/config
     environment:
       - EMAIL=adnan.kamili@gmail.com
-      - URL=on-prem.cryptlex.com
+      - URL=${WEB_DOMAIN}
     depends_on:
       - webapi
     ports:
@@ -55,7 +55,7 @@ services:
       - geoip
     env_file: webapi.env
     environment:
-      JWT_AUDIENCE: ${WEB_API_URL}
+      JWT_AUDIENCE: https://${WEB_DOMAIN}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: redis://:@cache:6379
       GEOIPSERVER_URL: http://geoip:8080/json
@@ -72,7 +72,7 @@ services:
     environment:
       COMPANY_NAME: "My Company"
       COMPANY_WEBSITE: http://mycompany.com
-      WEB_API_BASE_URL: ${WEB_API_URL}
+      WEB_API_BASE_URL: https://${WEB_DOMAIN}
       GOOGLE_ANALYTICS_KEY: UA-XXXXXXXX-X
     networks:
       - frontend
