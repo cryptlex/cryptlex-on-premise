@@ -33,7 +33,7 @@ services:
     restart: unless-stopped
   
   loadbalancer: 
-    image: linuxserver/letsencrypt
+    image: linuxserver/letsencrypt:0.31.0-ls4
     volumes:
       - ./config:/config
     environment:
