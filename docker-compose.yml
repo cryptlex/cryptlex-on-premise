@@ -71,7 +71,7 @@ services:
       - webapi
     environment:
       COMPANY_NAME: "My Company"
-      COMPANY_WEBSITE: http://mycompany.com
+      COMPANY_WEBSITE: https://mycompany.com
       WEB_API_BASE_URL: https://${WEB_DOMAIN}
       GOOGLE_ANALYTICS_KEY: UA-XXXXXXXX-X
     networks:
