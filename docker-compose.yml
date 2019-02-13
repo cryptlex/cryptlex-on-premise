@@ -65,13 +65,15 @@ services:
     ports:
       - 5000
 
-  webapp:
-    image: cryptlex/cryptlex-web-app-enterprise:3.0.0
+  dashboard:
+    image: cryptlex/cryptlex-web-dashboard:3.0.1
     depends_on:
       - webapi
     environment:
       COMPANY_NAME: "My Company"
       COMPANY_WEBSITE: https://mycompany.com
+      COMPANY_LOGO_URL: https://mycompany.com/logo.png
+      COMPANY_WHITE_LOGO_URL: https://mycompany.com/logo_white.png
       WEB_API_BASE_URL: https://${WEB_DOMAIN}
       GOOGLE_ANALYTICS_KEY: UA-XXXXXXXX-X
     networks:
