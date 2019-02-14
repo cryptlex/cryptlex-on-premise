@@ -37,7 +37,7 @@ services:
     volumes:
       - ./config:/config
     environment:
-      - EMAIL=joe.doe@mycompany.com
+      - EMAIL=${EMAIL}
       - URL=${WEB_DOMAIN}
     depends_on:
       - webapi
@@ -69,13 +69,9 @@ services:
     image: cryptlex/cryptlex-web-dashboard:3.0.6
     depends_on:
       - webapi
+    env_file: dashboard.env
     environment:
-      COMPANY_NAME: "My Company"
-      COMPANY_WEBSITE: https://mycompany.com
-      COMPANY_LOGO_URL: https://mycompany.com/logo.png
-      COMPANY_WHITE_LOGO_URL: https://mycompany.com/logo_white.png
       WEB_API_BASE_URL: https://${WEB_DOMAIN}
-      GOOGLE_ANALYTICS_KEY: UA-XXXXXXXX-X
     networks:
       - frontend
     restart: unless-stopped
