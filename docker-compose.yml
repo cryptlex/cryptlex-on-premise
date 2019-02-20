@@ -32,38 +32,49 @@ services:
       - backend
     restart: unless-stopped
   
-  loadbalancer: 
-    image: linuxserver/letsencrypt:0.31.0-ls4
-    volumes:
-      - ./config:/config
-    environment:
-      - EMAIL=${EMAIL}
-      - URL=${WEB_DOMAIN}
-    depends_on:
-      - webapi
+  reverse-proxy:
+    image: traefik:1.7-alpine
+    command: --api --docker --acme.email=${EMAIL} --logLevel="DEBUG"
     ports:
-      - 80:80
-      - 443:443
+      - "80:80"     # The HTTP port
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/traefik.toml
+      - ./acme.json:/acme.json
+    expose:
+      # traefik dashboard port
+      - 8080
+    labels:
+      traefik.enable: true
+      traefik.frontend.rule: "Host:${DASHBOARD_DOMAIN}; PathPrefixStrip:/traefik" 
+      traefik.frontend.auth.basic: "admin:$$apr1$$.F7lXgnu$$y7ohHc8cbhaa8SsOn0Mzs1"
+      traefik.port: 8080
     networks:
       - backend
     restart: unless-stopped
 
   webapi:
-    image: cryptlex/cryptlex-web-api-enterprise:3.10.2
+    image: cryptlex/cryptlex-web-api-enterprise:3.10.3
     depends_on:
       - db
       - geoip
     env_file: webapi.env
     environment:
-      JWT_AUDIENCE: https://${WEB_DOMAIN}
+      JWT_AUDIENCE: https://${WEB_API_DOMAIN}
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      REDIS_URL: redis://:@cache:6379
+      REDIS_URL: redis://cache:6379
       GEOIPSERVER_URL: http://geoip:8080/json
     networks:
       - backend
     restart: unless-stopped
     ports:
       - 5000
+    labels:
+      - traefik.backend=cryptlex-webapi
+      - traefik.frontend.rule=Host:${WEB_API_DOMAIN}
+      - traefik.docker.network=backend
+      - traefik.port=5000
 
   dashboard:
     image: cryptlex/cryptlex-web-dashboard:3.0.7
@@ -71,12 +82,17 @@ services:
       - webapi
     env_file: dashboard.env
     environment:
-      WEB_API_BASE_URL: https://${WEB_DOMAIN}
+      WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
     networks:
       - frontend
     restart: unless-stopped
     ports:
       - 4200:80
+    labels:
+      - traefik.backend=cryptlex-dashboard
+      - traefik.frontend.rule=Host:${DASHBOARD_DOMAIN}
+      - traefik.docker.network=frontend
+      - traefik.port=80
 
 networks:
   backend:
