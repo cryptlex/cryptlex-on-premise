@@ -15,6 +15,8 @@ services:
     restart: unless-stopped
     volumes:
       - db_data:/var/lib/postgresql/data
+    labels:
+      - traefik.enable=false
 
   cache:
     image: redis:alpine
@@ -23,6 +25,8 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    labels:
+      - traefik.enable=false
 
   geoip:
     image: cryptlex/freegeoip:3.6.0
@@ -31,6 +35,8 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    labels:
+      - traefik.enable=false
   
   reverse-proxy:
     image: traefik:1.7-alpine
@@ -77,27 +83,25 @@ services:
       - traefik.port=5000
 
   dashboard:
-    image: cryptlex/cryptlex-web-dashboard:3.0.7
+    image: cryptlex/cryptlex-web-dashboard:3.0.8
     depends_on:
       - webapi
     env_file: dashboard.env
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
     networks:
-      - frontend
+      - backend
     restart: unless-stopped
     ports:
-      - 4200:80
+      - 4200
     labels:
       - traefik.backend=cryptlex-dashboard
       - traefik.frontend.rule=Host:${DASHBOARD_DOMAIN}
-      - traefik.docker.network=frontend
-      - traefik.port=80
+      - traefik.docker.network=backend
+      - traefik.port=4200
 
 networks:
   backend:
-    driver: bridge
-  frontend:
     driver: bridge
 
 volumes:
