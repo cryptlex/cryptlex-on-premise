@@ -80,6 +80,7 @@ services:
       - traefik.backend=cryptlex-webapi
       - traefik.frontend.rule=Host:${WEB_API_DOMAIN}
       - traefik.docker.network=backend
+      - traefik.frontend.passHostHeader=true	
       - traefik.port=5000
 
   dashboard:
