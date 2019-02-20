@@ -1,3 +1,5 @@
+insecureSkipVerify = true
+
 # Traefik will listen for traffic on both HTTP and HTTPS.
 defaultEntryPoints = ["http", "https"]
  
