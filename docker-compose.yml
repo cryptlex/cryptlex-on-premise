@@ -30,9 +30,9 @@ services:
   
   reverse-proxy:
     image: traefik:1.7-alpine
-    command: --api --docker --acme.email=${EMAIL} --logLevel="DEBUG"
+    command: --api --docker --acme.email=${EMAIL}
     ports:
-      - "80:80"     # The HTTP port
+      # - "80:80"     # The HTTP port
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -44,7 +44,7 @@ services:
     labels:
       traefik.enable: true
       traefik.frontend.rule: "Host:${DASHBOARD_DOMAIN}; PathPrefixStrip:/traefik" 
-      traefik.frontend.auth.basic: "admin:$$apr1$$.F7lXgnu$$y7ohHc8cbhaa8SsOn0Mzs1"
+      traefik.frontend.auth.basic: ${TRAEFIK_BASIC_AUTH}
       traefik.port: 8080
     networks:
       - backend
@@ -68,7 +68,7 @@ services:
       - geoip
     env_file: webapi.env
     environment:
-      JWT_AUDIENCE: http://localhost:5000
+      JWT_AUDIENCE: http://webapi:5000
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       REDIS_URL: # redis://cache:6379 - not required for single machine deployment
       GEOIPSERVER_URL: http://geoip:8080/json
