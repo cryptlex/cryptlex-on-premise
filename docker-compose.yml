@@ -43,7 +43,7 @@ services:
       - 8080
     labels:
       - traefik.enable=true
-      - traefik.frontend.rule="Host:${DASHBOARD_DOMAIN}; PathPrefixStrip:/traefik" 
+      - traefik.frontend.rule=Host:${DASHBOARD_DOMAIN};PathPrefixStrip:/traefik
       - traefik.port=8080
       - traefik.frontend.auth.basic.users=[${TRAEFIK_BASIC_AUTH}]
     networks:
