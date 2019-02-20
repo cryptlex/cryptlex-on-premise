@@ -43,7 +43,7 @@ services:
       - 8080
     labels:
       traefik.enable: true
-      traefik.frontend.rule: "Host:${DASHBOARD_DOMAIN}:443; PathPrefixStrip:/traefik" 
+      traefik.frontend.rule: "Host:${DASHBOARD_DOMAIN}; PathPrefixStrip:/traefik" 
       traefik.frontend.auth.basic: ${TRAEFIK_BASIC_AUTH}
       traefik.port: 8080
     networks:
@@ -79,7 +79,7 @@ services:
       - 5000
     labels:
       - traefik.backend=cryptlex-webapi
-      - traefik.frontend.rule=Host:${WEB_API_DOMAIN}:443
+      - traefik.frontend.rule=Host:${WEB_API_DOMAIN}
       - traefik.frontend.passHostHeader=true
       - traefik.docker.network=backend
       - traefik.port=5000
@@ -98,7 +98,7 @@ services:
       - 4200
     labels:
       - traefik.backend=cryptlex-dashboard
-      - traefik.frontend.rule=Host:${DASHBOARD_DOMAIN}:443
+      - traefik.frontend.rule=Host:${DASHBOARD_DOMAIN};Port:443
       - traefik.docker.network=backend
       - traefik.port=4200
 
