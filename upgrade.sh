@@ -6,8 +6,8 @@ docker-compose stop
 echo "### getting the latest changes ..."
 git pull
 
-echo "### getting the latest docker images ..."
-docker-compose pull
+echo "### getting the latest webapi and dashboard docker images ..."
+docker-compose pull webapi dashboard
 
 echo "### starting the Cryptlex services ..."
 docker-compose up -d
