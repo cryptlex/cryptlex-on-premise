@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "### stopping the Cryptlex services ..."
-docker-compose stop
+echo "### stopping the webapi and dashboard services ..."
+docker-compose stop webapi dashboard
 
 echo "### getting the latest webapi and dashboard docker images ..."
 docker-compose pull webapi dashboard
 
-echo "### starting the Cryptlex services ..."
+echo "### restarting the webapi and dashboard services ..."
 docker-compose up -d
