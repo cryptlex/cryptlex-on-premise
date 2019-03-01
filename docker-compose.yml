@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  db:
+  database:
     image: postgres:10.7-alpine
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
@@ -16,9 +16,29 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
+        max-size: "20m"
     volumes:
       - db_data:/var/lib/postgresql/data
+    labels:
+      - traefik.enable=false
+
+  filestore:
+    image: minio/minio:RELEASE.2019-02-26T19-51-46Z
+    environment:
+      MINIO_ACCESS_KEY: ${FILE_STORE_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${FILE_STORE_SECRET_KEY}
+    command: server http://filestore/data
+    ports:
+      - 9000
+    networks:
+      - backend
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+    volumes:
+      - filestore_data:/data
     labels:
       - traefik.enable=false
 
@@ -32,7 +52,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
+        max-size: "20m"
     labels:
       - traefik.enable=false
   
@@ -60,7 +80,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
+        max-size: "20m"
 
   # not required for single machine deployment
   # cache:
@@ -73,7 +93,7 @@ services:
   #   logging:
   #     driver: "json-file"
   #     options:
-  #       max-size: "10m"
+  #       max-size: "20m"
   #   labels:
   #     - traefik.enable=false
 
@@ -96,7 +116,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
+        max-size: "20m"
     labels:
       - traefik.backend=cryptlex-webapi
       - traefik.frontend.rule=Host:${WEB_API_DOMAIN}
@@ -119,12 +139,39 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
+        max-size: "20m"
     labels:
       - traefik.backend=cryptlex-dashboard
       - traefik.frontend.rule=Host:${DASHBOARD_DOMAIN}
       - traefik.docker.network=backend
       - traefik.port=4200
+
+  release-server:
+    image: cryptlex/cryptlex-release-server:3.0.0
+    depends_on:
+      - webapi
+    env_file: release-server.env
+    environment:
+      WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
+      RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
+      FILE_STORE_ACCESS_KEY: ${FILE_STORE_ACCESS_KEY}
+      FILE_STORE_SECRET_KEY: ${FILE_STORE_SECRET_KEY}
+      FILE_STORE_ENDPOINT: filestore
+      FILE_STORE_PORT: 9000
+    networks:
+      - backend
+    restart: unless-stopped
+    ports:
+      - 3000
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+    labels:
+      - traefik.backend=cryptlex-release-server
+      - traefik.frontend.rule=Host:${RELEASE_SERVER_DOMAIN}
+      - traefik.docker.network=backend
+      - traefik.port=3000
 
 networks:
   backend:
