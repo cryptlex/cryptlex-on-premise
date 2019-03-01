@@ -100,7 +100,7 @@ services:
   webapi:
     image: cryptlex/cryptlex-web-api-enterprise:latest
     depends_on:
-      - db
+      - database
       - geoip
     env_file: webapi.env
     environment:
