@@ -18,7 +18,7 @@ services:
       options:
         max-size: "20m"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - database_data:/var/lib/postgresql/data
     labels:
       - traefik.enable=false
 
@@ -178,4 +178,5 @@ networks:
     driver: bridge
 
 volumes:
-  db_data:
+  database_data:
+  filestore_data:
