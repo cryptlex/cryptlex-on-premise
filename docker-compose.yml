@@ -27,7 +27,7 @@ services:
     environment:
       MINIO_ACCESS_KEY: ${FILE_STORE_ACCESS_KEY}
       MINIO_SECRET_KEY: ${FILE_STORE_SECRET_KEY}
-    command: server http://filestore/data
+    command: server /data/minio
     ports:
       - 9000
     networks:
