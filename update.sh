@@ -1,10 +1,10 @@
 #!/bin/bash
 
-echo "### stopping the webapi and dashboard services ..."
-docker-compose stop webapi dashboard
+echo "### getting the latest webapi, dashboard and release-server docker images ..."
+docker-compose pull webapi dashboard release-server
 
-echo "### getting the latest webapi and dashboard docker images ..."
-docker-compose pull webapi dashboard
+echo "### stopping the webapi, dashboard and release-server services ..."
+docker-compose stop webapi dashboard release-server
 
-echo "### restarting the webapi and dashboard services ..."
+echo "### restarting the webapi, dashboard and release-server services ..."
 docker-compose up -d
