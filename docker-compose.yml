@@ -118,7 +118,7 @@ services:
       options:
         max-size: "20m"
     labels:
-      - traefik.backend=cryptlex-webapi
+      - traefik.backend=cryptlex-web-api
       - traefik.frontend.rule=Host:${WEB_API_DOMAIN}
       - traefik.frontend.passHostHeader=true
       - traefik.docker.network=backend
@@ -127,7 +127,7 @@ services:
   dashboard:
     image: cryptlex/cryptlex-web-dashboard:latest
     depends_on:
-      - webapi
+      - web-api
     env_file: dashboard.env
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
@@ -150,7 +150,7 @@ services:
   release-server:
     image: cryptlex/cryptlex-release-server:3.0.0
     depends_on:
-      - webapi
+      - web-api
     env_file: release-server.env
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
