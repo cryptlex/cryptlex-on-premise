@@ -97,14 +97,14 @@ services:
   #   labels:
   #     - traefik.enable=false
 
-  webapi:
+  web-api:
     image: cryptlex/cryptlex-web-api-enterprise:latest
     depends_on:
       - database
       - geoip
-    env_file: webapi.env
+    env_file: web-api.env
     environment:
-      JWT_AUDIENCE: http://webapi:5000
+      JWT_AUDIENCE: http://web-api:5000
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
       REDIS_URL: # redis://cache:6379 - not required for single machine deployment
       GEOIPSERVER_URL: http://geoip:8080/json
@@ -131,6 +131,7 @@ services:
     env_file: dashboard.env
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
+      RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
     networks:
       - backend
     restart: unless-stopped
