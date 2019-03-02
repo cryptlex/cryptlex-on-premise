@@ -148,7 +148,7 @@ services:
       - traefik.port=4200
 
   release-server:
-    image: cryptlex/cryptlex-release-server:3.0.0
+    image: cryptlex/cryptlex-release-server:latest
     depends_on:
       - web-api
     env_file: release-server.env
