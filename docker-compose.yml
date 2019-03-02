@@ -121,7 +121,7 @@ services:
       - traefik.backend=cryptlex-web-api
       - traefik.frontend.rule=Host:${WEB_API_DOMAIN}
       - traefik.frontend.passHostHeader=true
-      - traefik.docker.network=backend
+      - traefik.docker.network=cryptlex-on-premise_backend
       - traefik.port=5000
 
   dashboard:
@@ -144,7 +144,7 @@ services:
     labels:
       - traefik.backend=cryptlex-dashboard
       - traefik.frontend.rule=Host:${DASHBOARD_DOMAIN}
-      - traefik.docker.network=backend
+      - traefik.docker.network=cryptlex-on-premise_backend
       - traefik.port=4200
 
   release-server:
@@ -171,7 +171,7 @@ services:
     labels:
       - traefik.backend=cryptlex-release-server
       - traefik.frontend.rule=Host:${RELEASE_SERVER_DOMAIN}
-      - traefik.docker.network=backend
+      - traefik.docker.network=cryptlex-on-premise_backend
       - traefik.port=3000
 
 networks:
