@@ -27,7 +27,7 @@ services:
     environment:
       MINIO_ACCESS_KEY: ${FILE_STORE_ACCESS_KEY}
       MINIO_SECRET_KEY: ${FILE_STORE_SECRET_KEY}
-    command: server /data/minio
+    command: server /opt/minio
     ports:
       - 9000
     networks:
@@ -38,7 +38,7 @@ services:
       options:
         max-size: "20m"
     volumes:
-      - filestore_data:/data
+      - filestore_data:/opt/minio
     labels:
       - traefik.enable=false
 
