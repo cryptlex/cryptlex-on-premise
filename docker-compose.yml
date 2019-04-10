@@ -108,6 +108,7 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
       REDIS_URL: # redis://cache:6379 - not required for single machine deployment
       GEOIPSERVER_URL: http://geoip:8080/json
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
     networks:
       - backend
     restart: unless-stopped
@@ -132,6 +133,7 @@ services:
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
       RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
     networks:
       - backend
     restart: unless-stopped
