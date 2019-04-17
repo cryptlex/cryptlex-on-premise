@@ -1,7 +1,30 @@
-In case you want to use your own SSL certificates (instead of LetsEncrypt),
-then copy your ca.key and ca_chain.crt files in this directory and uncomment
-the following section in the traefik.toml file.
+In case you want to use your own SSL certificates (instead of LetsEncrypt), follow the steps outlined below:
+
+Step #1: 
+
+Copy your ca.key and ca_chain.crt files in this directory and uncomment the following section in the traefik.toml file:
 
 # [[entryPoints.https.tls.certificates]]
       # certFile = "ssl/ca_chain.crt"
       # keyFile = "ssl/ca.key"
+
+Step #2: 
+
+Comment out the acme section in the traefik.toml file:
+
+# [acme]
+# storage = "acme.json"
+# onHostRule = true
+# entryPoint = "https"
+#   [acme.httpChallenge]
+#   entryPoint = "http"
+
+Step #3: 
+
+Remove the --acme.email=${EMAIL} from reverse-proxy command section in the docker-compose.yml file.
+
+Step #4: 
+
+Next execute following command to restart the server:
+
+docker-compose up -d 
