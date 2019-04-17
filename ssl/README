@@ -1,0 +1,7 @@
+In case you want to use your own SSL certificates (instead of LetsEncrypt),
+then copy your ca.key and ca_chain.crt files in this directory and uncomment
+the following section in the traefik.toml file.
+
+# [[entryPoints.https.tls.certificates]]
+      # certFile = "ssl/ca_chain.crt"
+      # keyFile = "ssl/ca.key"
