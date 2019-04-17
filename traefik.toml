@@ -12,6 +12,9 @@ defaultEntryPoints = ["http", "https"]
   [entryPoints.https]
   address = ":443"
     [entryPoints.https.tls]
+    # [[entryPoints.https.tls.certificates]]
+      # certFile = "ssl/ca_chain.crt"
+      # keyFile = "ssl/ca.key"
  
 # These options are for Traefik's integration with Docker.
 [docker]
