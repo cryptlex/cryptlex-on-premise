@@ -180,6 +180,8 @@ services:
 networks:
   backend:
     driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1400
 
 volumes:
   database_data:
