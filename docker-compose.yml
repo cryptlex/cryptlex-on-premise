@@ -23,7 +23,7 @@ services:
       - traefik.enable=false
 
   filestore:
-    image: minio/minio:RELEASE.2019-02-26T19-51-46Z
+    image: minio/minio:RELEASE.2020-08-18T19-41-00Z
     environment:
       MINIO_ACCESS_KEY: ${FILE_STORE_ACCESS_KEY}
       MINIO_SECRET_KEY: ${FILE_STORE_SECRET_KEY}
@@ -43,7 +43,7 @@ services:
       - traefik.enable=false
 
   geoip:
-    image: cryptlex/freegeoip:3.6.0
+    image: cryptlex/freegeoip:latest
     ports:
       - 8080
     networks:
