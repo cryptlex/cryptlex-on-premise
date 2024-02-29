@@ -2,7 +2,7 @@ version: '3'
 
 services:
   database:
-    image: postgres:10.7-alpine
+    image: postgres:16.2-alpine
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       POSTGRES_USER: ${POSTGRES_USER}
@@ -55,7 +55,7 @@ services:
         max-size: "20m"
     labels:
       - traefik.enable=false
-  
+
   reverse-proxy:
     image: traefik:1.7-alpine
     command: --api --docker --logLevel=INFO --acme.email=${EMAIL}
@@ -150,7 +150,79 @@ services:
       - traefik.docker.network=cryptlex-on-premise_backend
       - traefik.port=4200
 
-  release-server:
+ admin-portal:
+    image: cryptlex/admin-portal:latest
+    depends_on:
+      - web-api
+    env_file: web-portals.env
+    environment:
+      WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
+      RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
+
+    networks:
+      - backend
+    restart: unless-stopped
+    ports:
+      - 4400
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+    labels:
+      - traefik.backend=cryptlex/cryptlex-admin-portal
+      - traefik.frontend.rule=Host:${ADMIN_PORTAL_DOMAIN}
+      - traefik.docker.network=cryptlex-on-premise_backend
+      - traefik.port=4400
+
+customer-portal:
+    image: cryptlex/customer-portal:latest
+    depends_on:
+      - web-api
+    env_file: web-portals.env
+    environment:
+      WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
+      RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
+
+    networks:
+      - backend
+    restart: unless-stopped
+    ports:
+      - 4401
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+    labels:
+      - traefik.backend=cryptlex/cryptlex-customer-portal
+      - traefik.frontend.rule=Host:${CUSTOMER_PORTAL_DOMAIN}
+      - traefik.docker.network=cryptlex-on-premise_backend
+      - traefik.port=4401
+
+reseller-portal:
+    image: cryptlex/reseller-portal:latest
+    depends_on:
+      - web-api
+    env_file: web-portals.env
+    environment:
+      WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
+      RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
+
+    networks:
+      - backend
+    restart: unless-stopped
+    ports:
+      - 4402
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+    labels:
+      - traefik.backend=cryptlex/cryptlex-reseller-portal
+      - traefik.frontend.rule=Host:${RESELLER_PORTAL_DOMAIN}
+      - traefik.docker.network=cryptlex-on-premise_backend
+      - traefik.port=4402
+
+ release-server:
     image: cryptlex/cryptlex-release-server:latest
     depends_on:
       - web-api
