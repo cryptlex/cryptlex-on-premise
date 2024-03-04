@@ -150,7 +150,7 @@ services:
       - traefik.docker.network=cryptlex-on-premise_backend
       - traefik.port=4200
 
- admin-portal:
+  admin-portal:
     image: cryptlex/admin-portal:latest
     depends_on:
       - web-api
@@ -169,12 +169,12 @@ services:
       options:
         max-size: "20m"
     labels:
-      - traefik.backend=cryptlex/cryptlex-admin-portal
+      - traefik.backend=cryptlex-admin-portal
       - traefik.frontend.rule=Host:${ADMIN_PORTAL_DOMAIN}
       - traefik.docker.network=cryptlex-on-premise_backend
       - traefik.port=4400
 
-customer-portal:
+  customer-portal:
     image: cryptlex/customer-portal:latest
     depends_on:
       - web-api
@@ -193,12 +193,12 @@ customer-portal:
       options:
         max-size: "20m"
     labels:
-      - traefik.backend=cryptlex/cryptlex-customer-portal
+      - traefik.backend=cryptlex-customer-portal
       - traefik.frontend.rule=Host:${CUSTOMER_PORTAL_DOMAIN}
       - traefik.docker.network=cryptlex-on-premise_backend
       - traefik.port=4401
 
-reseller-portal:
+  reseller-portal:
     image: cryptlex/reseller-portal:latest
     depends_on:
       - web-api
@@ -217,12 +217,12 @@ reseller-portal:
       options:
         max-size: "20m"
     labels:
-      - traefik.backend=cryptlex/cryptlex-reseller-portal
+      - traefik.backend=cryptlex-reseller-portal
       - traefik.frontend.rule=Host:${RESELLER_PORTAL_DOMAIN}
       - traefik.docker.network=cryptlex-on-premise_backend
       - traefik.port=4402
 
- release-server:
+  release-server:
     image: cryptlex/cryptlex-release-server:latest
     depends_on:
       - web-api
