@@ -158,7 +158,6 @@ services:
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
       RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
-
     networks:
       - backend
     restart: unless-stopped
@@ -182,7 +181,6 @@ services:
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
       RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
-
     networks:
       - backend
     restart: unless-stopped
@@ -206,7 +204,6 @@ services:
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
       RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
-
     networks:
       - backend
     restart: unless-stopped
