@@ -1,0 +1,9 @@
+name: PR-Agent Workflow
+
+on:
+  pull_request:
+  push:
+  
+jobs:
+  common_job:
+    uses: cryptlex/github-actions/jobs/pr_agent.yml@main
