@@ -154,7 +154,6 @@ services:
     image: cryptlex/admin-portal:latest
     depends_on:
       - web-api
-    env_file: web-portals.env
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
       RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
@@ -178,7 +177,6 @@ services:
     image: cryptlex/customer-portal:latest
     depends_on:
       - web-api
-    env_file: web-portals.env
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
       RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
@@ -202,7 +200,6 @@ services:
     image: cryptlex/reseller-portal:latest
     depends_on:
       - web-api
-    env_file: web-portals.env
     environment:
       WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
       RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
