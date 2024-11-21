@@ -6,5 +6,5 @@ docker compose pull web-api dashboard admin-portal customer-portal reseller-port
 echo "### stopping the services ..."
 docker compose stop web-api dashboard admin-portal customer-portal reseller-portal release-server
 
-echo "### restarting the web-api, dashboard and release-server services ..."
+echo "### restarting the services ..."
 docker compose up -d
