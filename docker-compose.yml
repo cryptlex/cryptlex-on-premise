@@ -44,6 +44,9 @@ services:
 
   geoip:
     image: cryptlex/freegeoip:latest
+    environment:
+      MAXMIND_LICENSE_KEY: ${MAXMIND_LICENSE_KEY}
+      MAXMIND_ACCOUNT_ID: ${MAXMIND_ACCOUNT_ID}
     ports:
       - 8080
     networks:
@@ -110,6 +113,8 @@ services:
       REDIS_URL: # redis://cache:6379 - not required for single machine deployment
       GEOIPSERVER_URL: http://geoip:8080/json
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      MAXMIND_LICENSE_KEY: ${MAXMIND_LICENSE_KEY}  
+      MAXMIND_ACCOUNT_ID: ${MAXMIND_ACCOUNT_ID} 
     networks:
       - backend
     restart: unless-stopped
