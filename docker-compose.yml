@@ -23,10 +23,10 @@ services:
       - traefik.enable=false
 
   filestore:
-    image: minio/minio:RELEASE.2020-08-18T19-41-00Z
+    image: minio/minio:RELEASE.2025-02-07T23-21-09Z
     environment:
-      MINIO_ACCESS_KEY: ${FILE_STORE_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${FILE_STORE_SECRET_KEY}
+      MINIO_ROOT_USER: ${FILE_STORE_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${FILE_STORE_SECRET_KEY}
     command: server /opt/minio
     ports:
       - 9000
