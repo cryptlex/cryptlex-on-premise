@@ -12,6 +12,8 @@ defaultEntryPoints = ["http", "https"]
   [entryPoints.https]
   address = ":443"
     [entryPoints.https.tls]
+    minVersion = "VersionTLS12"
+    maxVersion = "VersionTLS13"
     # [[entryPoints.https.tls.certificates]]
       # certFile = "ssl/ca_chain.crt"
       # keyFile = "ssl/ca.key"
