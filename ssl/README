@@ -27,4 +27,4 @@ Step #4:
 
 Next execute following command to restart the server:
 
-docker-compose up -d 
+docker compose up -d 
