@@ -3,7 +3,7 @@
 To get started with your Cryptlex On-premise installation, you’ll need the following things prepared in advance:
 
 - If this is your first time installing Cryptlex On-premise, you’ll need to [contact us](mailto:support@cryptlex.com) to schedule a guided installation. We’ll get you set up with a license key, and walk you through the installation process.
-- A server meeting the [minimum system requirements](/docs/cryptlex-self-hosted/system-requirements).
+- A server meeting the [minimum system requirements](/docs/010-system-requirements.md).
 
 ## Installation
 
@@ -47,7 +47,7 @@ cd cryptlex-on-premise
 chmod 0600 acme.json
 ```
 
-The `acme.json` will store the SSL certificates, which will be generated for the above three sub-domains.
+The `acme.json` will store the SSL certificates, which will be generated for the above five sub-domains.
 
 #### Step 3: Update the Postgres version
 
@@ -143,7 +143,7 @@ It uses [Redis](https://redis.io/) to store the cache data. If no Redis database
 
 #### Filestore service
 
-It stores release files using Minio, an AWS S3 compatible object storage server. In case you don't want to use Cryptlex [release management](/docs/release-management/creating-releases) API, this service can be commented out in the `docker-compose.yml` file.
+It stores release files using Minio, an AWS S3 compatible object storage server. In case you don't want to use Cryptlex [release management](https://cryptlex.com/docs/release-management/creating-releases) API, this service can be commented out in the `docker-compose.yml` file.
 
 #### GeoIP service
 

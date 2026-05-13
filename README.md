@@ -36,13 +36,13 @@ Cryptlex On-premise can be deployed in:
 
 ## Documentation
 
-| Topic                                  | Description                          |
-| -------------------------------------- | ------------------------------------ |
-| `docs/overview.md`                     | Overview of Cryptlex On-premise      |
-| `docs/system-requirements.md`          | Hardware and software requirements   |
-| `docs/server-layout.md`                | Recommended deployment architectures |
-| `docs/configuring-client-libraries.md` | Configure SDKs for On-premise        |
-| `docs/monitoring-your-instance.md`     | Monitoring and observability setup   |
+| Topic                                                                        | Description                          |
+| ---------------------------------------------------------------------------- | ------------------------------------ |
+| [docs/overview.md](docs/000-overview.md)                                     | Overview of Cryptlex On-premise      |
+| [docs/system-requirements.md](docs/system-requirements.md)                   | Hardware and software requirements   |
+| [docs/server-layout.md](docs/server-layout.md)                               | Recommended deployment architectures |
+| [docs/configuring-client-libraries.md](docs/configuring-client-libraries.md) | Configure SDKs for On-premise        |
+| [docs/monitoring-your-instance.md](docs/monitoring-your-instance.md)         | Monitoring and observability setup   |
 
 ---
 
@@ -55,7 +55,7 @@ Cryptlex On-premise consists of multiple independently scalable services:
 * Cryptlex GeoIP Server
 * PostgreSQL
 * Redis
-* Nginx
+* Reverse proxy (Traefik)
 * MinIO or S3 compatible storage
 
 The services can be deployed either:
@@ -139,7 +139,7 @@ status = SetCryptlexHost("https://cryptlex-api.mycompany.com");
 
 See:
 
-* [Confirguring client libraries](docs/configuring-client-libraries.md)
+* [Confirguring client libraries](docs/025-configuring-client-libraries.md)
 
 ---
 
@@ -157,7 +157,7 @@ This allows monitoring of:
 * infrastructure stability
 * alerting workflows
 
-See: 
+See:
 * [Monitoring your instance](docs/030-monitoring-your-instance.md)
 
 ---

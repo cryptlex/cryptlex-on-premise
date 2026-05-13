@@ -28,4 +28,4 @@ Cryptlex uses Redis for storing the cache data. If no Redis database is provided
 
 ### Filestore
 
-It uses [Minio](https://www.minio.io/), which is an Amazon S3 compatible object storage server, for storing release files. In case you don't want to use the Cryptlex [release management](/docs/release-management/overview) API, this is not required.
+It uses [Minio](https://www.minio.io/), which is an Amazon S3 compatible object storage server, for storing release files. In case you don't want to use the Cryptlex [release management](https://cryptlex.com/docs/release-management/overview) API, this is not required.

@@ -1,6 +1,6 @@
 To help you determine the best server layout, look over the diagrams below, and determine which layout works best for your dev/testing and production environments.
 
-Each layout will require the Cryptlex Web API server, Cryptlex Release server, Cryptlex GeoIP server, Postgres, Redis, and Nginx \(for hosting the Cryptlex dashboard\) web server .
+ Each layout will require the Cryptlex Web API server, Cryptlex Release server, Cryptlex GeoIP server, Postgres, Redis, and a reverse proxy/web server for hosting the Cryptlex dashboard and routing traffic. In the Docker Compose deployment shipped with this repository, that role is provided by Traefik; Nginx is only applicable for alternative deployment models where you choose to use it.
 
 The Cryptlex services are separated because as you will see in the diagrams below they may not all run on the same server, and each component can be horizontally scaled separately. 
 
