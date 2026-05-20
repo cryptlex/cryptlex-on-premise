@@ -15,25 +15,6 @@ Cryptlex On-premise can be deployed in:
 
 ---
 
-## Features
-
-* Self hosted Cryptlex deployment
-* REST API support
-* License activation and validation
-* Floating licensing support
-* Offline activation workflows
-* Release management APIs
-* Entitlements and feature flags
-* PostgreSQL support
-* Redis caching support
-* Horizontal scalability
-* Load balancer compatible
-* Monitoring integration support
-* Docker based deployment
-* Compatible with all Cryptlex SDKs and client libraries
-
----
-
 ## Documentation
 
 | Topic                                                                        | Description                          |
@@ -52,7 +33,6 @@ Cryptlex On-premise consists of multiple independently scalable services:
 
 * Cryptlex Web API
 * Cryptlex Release Server
-* Cryptlex GeoIP Server
 * PostgreSQL
 * Redis
 * Reverse proxy (Traefik)
@@ -166,28 +146,15 @@ See:
 
 ### PostgreSQL
 
-Used for:
-
-* licenses
-* activations
-* users
-* entitlements
-* audit data
+Primary database service used by Cryptlex Enterprise.
 
 ### Redis
 
-Used for:
-
-* caching
-* temporary data
-* performance optimization
+Caching service used for performance optimization.
 
 ### MinIO / S3 Compatible Storage
 
-Used for:
-
-* release file storage
-* downloadable assets
+Object storage service used for application file storage.
 
 ---
 
