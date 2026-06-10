@@ -1,3 +1,5 @@
+version: '3'
+
 services:
   database:
     image: postgres:16.8-alpine
@@ -11,6 +13,10 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
     volumes:
       - database_data:/var/lib/postgresql/data
     labels:
@@ -27,6 +33,10 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
     volumes:
       - filestore_data:/opt/minio
     labels:
@@ -42,31 +52,29 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
     labels:
       - traefik.enable=false
 
   reverse-proxy:
     image: traefik:v3.7.1
-
     command:
       - --providers.docker=true
       - --providers.docker.endpoint=unix:///var/run/docker.sock
-
       - --providers.docker.watch=true
       - --providers.docker.exposedbydefault=false
-      - --providers.file.filename=/traefik.yaml
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
-
       - --api.dashboard=true
-
       - --certificatesresolvers.letsencrypt.acme.email=${EMAIL}
       - --certificatesresolvers.letsencrypt.acme.storage=/acme.json
       - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
       - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
-
       - --log.level=INFO
 
     ports:
@@ -81,16 +89,17 @@ services:
       - backend
 
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
 
     labels:
       - traefik.enable=true
-
-      # Dashboard
       - traefik.http.routers.traefik.rule=Host(`${DASHBOARD_DOMAIN}`) && PathPrefix(`/traefik`)
       - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.tls.certresolver=letsencrypt
       - traefik.http.routers.traefik.service=api@internal
-
       - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_BASIC_AUTH}
       - traefik.http.routers.traefik.middlewares=traefik-auth
 
@@ -110,17 +119,19 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
     ports:
       - "5000"
 
     labels:
       - traefik.enable=true
       - traefik.docker.network=cryptlex-on-premise_backend
-
       - traefik.http.routers.webapi.rule=Host(`${WEB_API_DOMAIN}`)
       - traefik.http.routers.webapi.entrypoints=websecure
       - traefik.http.routers.webapi.tls.certresolver=letsencrypt
-
       - traefik.http.services.webapi.loadbalancer.server.port=5000
 
   dashboard:
@@ -135,17 +146,19 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
     ports:
       - "4200"
 
     labels:
       - traefik.enable=true
       - traefik.docker.network=cryptlex-on-premise_backend
-
       - traefik.http.routers.dashboard.rule=Host(`${DASHBOARD_DOMAIN}`)
       - traefik.http.routers.dashboard.entrypoints=websecure
       - traefik.http.routers.dashboard.tls.certresolver=letsencrypt
-
       - traefik.http.services.dashboard.loadbalancer.server.port=4200
 
   admin-portal:
@@ -158,17 +171,19 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
     ports:
       - "4400"
 
     labels:
       - traefik.enable=true
       - traefik.docker.network=cryptlex-on-premise_backend
-
       - traefik.http.routers.admin.rule=Host(`${ADMIN_PORTAL_DOMAIN}`)
       - traefik.http.routers.admin.entrypoints=websecure
       - traefik.http.routers.admin.tls.certresolver=letsencrypt
-
       - traefik.http.services.admin.loadbalancer.server.port=4400
 
   customer-portal:
@@ -181,17 +196,19 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
     ports:
       - "4401"
 
     labels:
       - traefik.enable=true
       - traefik.docker.network=cryptlex-on-premise_backend
-
       - traefik.http.routers.customer.rule=Host(`${CUSTOMER_PORTAL_DOMAIN}`)
       - traefik.http.routers.customer.entrypoints=websecure
       - traefik.http.routers.customer.tls.certresolver=letsencrypt
-
       - traefik.http.services.customer.loadbalancer.server.port=4401
 
   reseller-portal:
@@ -204,17 +221,19 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
     ports:
       - "4402"
 
     labels:
       - traefik.enable=true
       - traefik.docker.network=cryptlex-on-premise_backend
-
       - traefik.http.routers.reseller.rule=Host(`${RESELLER_PORTAL_DOMAIN}`)
       - traefik.http.routers.reseller.entrypoints=websecure
       - traefik.http.routers.reseller.tls.certresolver=letsencrypt
-
       - traefik.http.services.reseller.loadbalancer.server.port=4402
 
   release-server:
@@ -232,17 +251,19 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
     ports:
       - "3000"
 
     labels:
       - traefik.enable=true
       - traefik.docker.network=cryptlex-on-premise_backend
-
       - traefik.http.routers.release.rule=Host(`${RELEASE_SERVER_DOMAIN}`)
       - traefik.http.routers.release.entrypoints=websecure
       - traefik.http.routers.release.tls.certresolver=letsencrypt
-
       - traefik.http.services.release.loadbalancer.server.port=3000
 
 networks:
