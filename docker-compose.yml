@@ -21,7 +21,16 @@ services:
       - database_data:/var/lib/postgresql/data
     labels:
       - traefik.enable=false
-
+  valkey:
+    image: valkey/valkey:8.1
+    command: valkey-server --appendonly yes
+    networks:
+     - backend
+    restart: unless-stopped
+    volumes:
+     - valkey_data:/data
+    labels:
+     - traefik.enable=false
   filestore:
     image: minio/minio:RELEASE.2025-02-07T23-21-09Z
     environment:
@@ -41,24 +50,7 @@ services:
       - filestore_data:/opt/minio
     labels:
       - traefik.enable=false
-
-  geoip:
-    image: cryptlex/freegeoip:latest
-    environment:
-      MAXMIND_LICENSE_KEY: ${MAXMIND_LICENSE_KEY}
-      MAXMIND_ACCOUNT_ID: ${MAXMIND_ACCOUNT_ID}
-    ports:
-      - "8080"
-    networks:
-      - backend
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
-    labels:
-      - traefik.enable=false
-
+ 
   reverse-proxy:
     image: traefik:v3.7.1
     command:
@@ -96,26 +88,18 @@ services:
 
     labels:
       - traefik.enable=true
-      - traefik.http.routers.traefik.rule=Host(`${DASHBOARD_DOMAIN}`) && PathPrefix(`/traefik`)
-      - traefik.http.routers.traefik.entrypoints=websecure
-      - traefik.http.routers.traefik.tls.certresolver=letsencrypt
-      - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_BASIC_AUTH}
-      - traefik.http.routers.traefik.middlewares=traefik-auth
 
   web-api:
     image: cryptlex/cryptlex-web-api-enterprise:latest
     depends_on:
       - database
-      - geoip
+      - valkey
     env_file: web-api.env
     environment:
       JWT_AUDIENCE: http://web-api:5000
+      REDIS_URL: redis://valkey:6379
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
-      GEOIPSERVER_URL: http://geoip:8080/json
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      MAXMIND_LICENSEKEY: ${MAXMIND_LICENSE_KEY}
-      MAXMIND_ACCOUNTID: ${MAXMIND_ACCOUNT_ID}
     networks:
       - backend
     restart: unless-stopped
@@ -134,32 +118,7 @@ services:
       - traefik.http.routers.webapi.tls.certresolver=letsencrypt
       - traefik.http.services.webapi.loadbalancer.server.port=5000
 
-  dashboard:
-    image: cryptlex/cryptlex-web-dashboard:latest
-    depends_on:
-      - web-api
-    env_file: dashboard.env
-    environment:
-      WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
-      RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-    networks:
-      - backend
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
-    ports:
-      - "4200"
-
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=cryptlex-on-premise_backend
-      - traefik.http.routers.dashboard.rule=Host(`${DASHBOARD_DOMAIN}`)
-      - traefik.http.routers.dashboard.entrypoints=websecure
-      - traefik.http.routers.dashboard.tls.certresolver=letsencrypt
-      - traefik.http.services.dashboard.loadbalancer.server.port=4200
+  
 
   admin-portal:
     image: cryptlex/admin-portal:latest
@@ -275,3 +234,4 @@ networks:
 volumes:
   database_data:
   filestore_data:
+  valkey_data:
