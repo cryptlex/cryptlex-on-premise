@@ -1,4 +1,10 @@
-version: '3'
+name: cryptlex-on-premise
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "20m"
+    max-file: "5"
 
 services:
   database:
@@ -8,19 +14,20 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - 5432
+    expose:
+      - "5432"
     networks:
       - backend
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
+    logging: *default-logging
     volumes:
       - database_data:/var/lib/postgresql/data
-    labels:
-      - traefik.enable=false
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   filestore:
     image: minio/minio:RELEASE.2025-02-07T23-21-09Z
@@ -28,132 +35,89 @@ services:
       MINIO_ROOT_USER: ${FILE_STORE_ACCESS_KEY}
       MINIO_ROOT_PASSWORD: ${FILE_STORE_SECRET_KEY}
     command: server /opt/minio
-    ports:
-      - 9000
+    expose:
+      - "9000"
     networks:
       - backend
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
+    logging: *default-logging
     volumes:
       - filestore_data:/opt/minio
-    labels:
-      - traefik.enable=false
-
-  geoip:
-    image: cryptlex/freegeoip:latest
-    environment:
-      MAXMIND_LICENSE_KEY: ${MAXMIND_LICENSE_KEY}
-      MAXMIND_ACCOUNT_ID: ${MAXMIND_ACCOUNT_ID}
-    ports:
-      - 8080
-    networks:
-      - backend
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
-    labels:
-      - traefik.enable=false
 
   reverse-proxy:
-    image: traefik:1.7-alpine
-    command: --api --docker --logLevel=INFO --acme.email=${EMAIL}
+    image: traefik:v3.7
+    command:
+      - --log.level=INFO
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls=true
+      # Remove the following 4 lines if you are using custom SSL certificates
+      # instead of Let's Encrypt (see ssl/README).
+      - --entrypoints.websecure.http.tls.certresolver=letsencrypt
+      - --certificatesresolvers.letsencrypt.acme.email=${EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik.toml:/traefik.toml
-      - ./acme.json:/acme.json
-      - ./ssl:/ssl
-    expose:
-      # traefik dashboard port
-      - 8080
-    labels:
-      - traefik.enable=true
-      - traefik.frontend.rule=Host:${DASHBOARD_DOMAIN};PathPrefixStrip:/traefik
-      - traefik.port=8080
-      - traefik.frontend.auth.basic=${TRAEFIK_BASIC_AUTH}
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme.json:/etc/traefik/acme.json
+      - ./dynamic:/etc/traefik/dynamic:ro
+      - ./ssl:/ssl:ro
     networks:
       - backend
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
+    logging: *default-logging
 
-  # not required for single machine deployment
-  # cache:
-  #   image: redis:alpine
-  #   ports:
-  #     - 6379
-  #   networks:
-  #     - backend
-  #   restart: unless-stopped
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "20m"
-  #   labels:
-  #     - traefik.enable=false
+  cache:
+    image: valkey/valkey:9.1-alpine
+    command: valkey-server --maxmemory 1gb --maxmemory-policy allkeys-lru
+    expose:
+      - "6379"
+    networks:
+      - backend
+    restart: unless-stopped
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   web-api:
     image: cryptlex/cryptlex-web-api-enterprise:latest
     depends_on:
-      - database
-      - geoip
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
     env_file: web-api.env
     environment:
       JWT_AUDIENCE: http://web-api:5000
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
-      REDIS_URL: # redis://cache:6379 - not required for single machine deployment
-      GEOIPSERVER_URL: http://geoip:8080/json
+      REDIS_URL: redis://cache:6379
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       MAXMIND_LICENSEKEY: ${MAXMIND_LICENSE_KEY}
       MAXMIND_ACCOUNTID: ${MAXMIND_ACCOUNT_ID}
     networks:
       - backend
     restart: unless-stopped
-    ports:
-      - 5000
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
+    expose:
+      - "5000"
+    logging: *default-logging
     labels:
-      - traefik.backend=cryptlex-web-api
-      - traefik.frontend.rule=Host:${WEB_API_DOMAIN}
-      - traefik.frontend.passHostHeader=true
-      - traefik.docker.network=cryptlex-on-premise_backend
-      - traefik.port=5000
-
-  dashboard:
-    image: cryptlex/cryptlex-web-dashboard:latest
-    depends_on:
-      - web-api
-    env_file: dashboard.env
-    environment:
-      WEB_API_BASE_URL: https://${WEB_API_DOMAIN}
-      RELEASE_SERVER_BASE_URL: https://${RELEASE_SERVER_DOMAIN}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-    networks:
-      - backend
-    restart: unless-stopped
-    ports:
-      - 4200
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
-    labels:
-      - traefik.backend=cryptlex-dashboard
-      - traefik.frontend.rule=Host:${DASHBOARD_DOMAIN}
-      - traefik.docker.network=cryptlex-on-premise_backend
-      - traefik.port=4200
+      - traefik.enable=true
+      - traefik.http.routers.web-api.rule=Host(`${WEB_API_DOMAIN}`)
+      - traefik.http.routers.web-api.entrypoints=websecure
+      - traefik.http.services.web-api.loadbalancer.server.port=5000
 
   admin-portal:
     image: cryptlex/admin-portal:latest
@@ -165,17 +129,14 @@ services:
     networks:
       - backend
     restart: unless-stopped
-    ports:
-      - 4400
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
+    expose:
+      - "4400"
+    logging: *default-logging
     labels:
-      - traefik.backend=cryptlex/cryptlex-admin-portal
-      - traefik.frontend.rule=Host:${ADMIN_PORTAL_DOMAIN}
-      - traefik.docker.network=cryptlex-on-premise_backend
-      - traefik.port=4400
+      - traefik.enable=true
+      - traefik.http.routers.admin-portal.rule=Host(`${ADMIN_PORTAL_DOMAIN}`)
+      - traefik.http.routers.admin-portal.entrypoints=websecure
+      - traefik.http.services.admin-portal.loadbalancer.server.port=4400
 
   customer-portal:
     image: cryptlex/customer-portal:latest
@@ -187,17 +148,14 @@ services:
     networks:
       - backend
     restart: unless-stopped
-    ports:
-      - 4401
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
+    expose:
+      - "4401"
+    logging: *default-logging
     labels:
-      - traefik.backend=cryptlex/cryptlex-customer-portal
-      - traefik.frontend.rule=Host:${CUSTOMER_PORTAL_DOMAIN}
-      - traefik.docker.network=cryptlex-on-premise_backend
-      - traefik.port=4401
+      - traefik.enable=true
+      - traefik.http.routers.customer-portal.rule=Host(`${CUSTOMER_PORTAL_DOMAIN}`)
+      - traefik.http.routers.customer-portal.entrypoints=websecure
+      - traefik.http.services.customer-portal.loadbalancer.server.port=4401
 
   reseller-portal:
     image: cryptlex/reseller-portal:latest
@@ -209,17 +167,14 @@ services:
     networks:
       - backend
     restart: unless-stopped
-    ports:
-      - 4402
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
+    expose:
+      - "4402"
+    logging: *default-logging
     labels:
-      - traefik.backend=cryptlex/cryptlex-reseller-portal
-      - traefik.frontend.rule=Host:${RESELLER_PORTAL_DOMAIN}
-      - traefik.docker.network=cryptlex-on-premise_backend
-      - traefik.port=4402
+      - traefik.enable=true
+      - traefik.http.routers.reseller-portal.rule=Host(`${RESELLER_PORTAL_DOMAIN}`)
+      - traefik.http.routers.reseller-portal.entrypoints=websecure
+      - traefik.http.services.reseller-portal.loadbalancer.server.port=4402
 
   release-server:
     image: cryptlex/cryptlex-release-server:latest
@@ -236,23 +191,24 @@ services:
     networks:
       - backend
     restart: unless-stopped
-    ports:
-      - 3000
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "20m"
+    expose:
+      - "3000"
+    logging: *default-logging
     labels:
-      - traefik.backend=cryptlex-release-server
-      - traefik.frontend.rule=Host:${RELEASE_SERVER_DOMAIN}
-      - traefik.docker.network=cryptlex-on-premise_backend
-      - traefik.port=3000
+      - traefik.enable=true
+      - traefik.http.routers.release-server.rule=Host(`${RELEASE_SERVER_DOMAIN}`)
+      - traefik.http.routers.release-server.entrypoints=websecure
+      - traefik.http.services.release-server.loadbalancer.server.port=3000
 
 networks:
   backend:
     driver: bridge
-    driver_opts:
-      com.docker.network.driver.mtu: 1300
+    # Set a lower MTU only if the host network's MTU is below the 1500
+    # default (common with VPNs, VXLAN/overlay networks, or some cloud
+    # providers) and you see hanging connections or TLS handshake failures
+    # between containers. Check the host MTU with: ip link show
+    # driver_opts:
+    #   com.docker.network.driver.mtu: 1300
 
 volumes:
   database_data:

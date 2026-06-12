@@ -1,30 +1,33 @@
-In case you want to use your own SSL certificates (instead of LetsEncrypt), follow the steps outlined below:
+In case you want to use your own SSL certificates (instead of Let's Encrypt),
+follow the steps outlined below:
 
-Step #1: 
+Step #1:
 
-Copy your ca.key and ca_chain.crt files in this directory and uncomment the following section in the traefik.toml file:
+Copy your ca_chain.crt and ca.key files into this directory.
 
-# [[entryPoints.https.tls.certificates]]
-      # certFile = "ssl/ca_chain.crt"
-      # keyFile = "ssl/ca.key"
+Step #2:
 
-Step #2: 
+Uncomment the "certificates" section at the bottom of the dynamic/tls.yml file:
 
-Comment out the acme section in the traefik.toml file:
+  certificates:
+    - certFile: /ssl/ca_chain.crt
+      keyFile: /ssl/ca.key
 
-# [acme]
-# storage = "acme.json"
-# onHostRule = true
-# entryPoint = "https"
-#   [acme.httpChallenge]
-#   entryPoint = "http"
+If your files are named differently, adjust the names accordingly (the /ssl/
+path prefix must remain).
 
-Step #3: 
+Step #3:
 
-Remove the --acme.email=${EMAIL} from reverse-proxy command section in the docker-compose.yml file.
+In the docker-compose.yml file, remove the 4 Let's Encrypt lines from the
+reverse-proxy "command" section (they are marked with a comment):
 
-Step #4: 
+  - --entrypoints.websecure.http.tls.certresolver=letsencrypt
+  - --certificatesresolvers.letsencrypt.acme.email=${EMAIL}
+  - --certificatesresolvers.letsencrypt.acme.storage=/etc/traefik/acme.json
+  - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
 
-Next execute following command to restart the server:
+Step #4:
 
-docker compose up -d 
+Recreate the reverse proxy:
+
+docker compose up -d --force-recreate reverse-proxy
