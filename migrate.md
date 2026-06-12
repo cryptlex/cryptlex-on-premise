@@ -22,7 +22,7 @@
    ```
    Certificates re-issue automatically on first start.
 6. Custom SSL certs (non-Let's Encrypt): follow `ssl/README`.
-7. `docker compose up -d`
+7. `docker compose up -d --remove-orphans` (cleans up the removed `dashboard`/`geoip` containers if step 2 was skipped)
 
 ## Verify
 
