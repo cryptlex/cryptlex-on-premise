@@ -1,0 +1,15 @@
+# Traefik dynamic configuration. Changes to files in this directory are
+# picked up automatically; no restart required.
+
+tls:
+  options:
+    default:
+      minVersion: VersionTLS12
+
+  # To use custom SSL certificates instead of Let's Encrypt, copy your
+  # certificate and key into the ssl/ directory and uncomment the section
+  # below (see ssl/README for full instructions).
+  #
+  # certificates:
+  #   - certFile: /ssl/ca_chain.crt
+  #     keyFile: /ssl/ca.key
