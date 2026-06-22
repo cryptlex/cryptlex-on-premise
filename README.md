@@ -1,6 +1,6 @@
 # Cryptlex On-premise
 
-Cryptlex On-premise provides a fully self hosted deployment of Cryptlex for organizations that require complete control over infrastructure, data residency, security, and network environments.
+Cryptlex On-premise provides a fully self-hosted deployment of Cryptlex for organizations that require complete control over infrastructure, data residency, security, and network environments.
 
 It includes all major Cryptlex platform capabilities, including license management, activations, floating licenses, trials, entitlements, release management, and APIs, while allowing deployment within your own infrastructure.
 
@@ -17,11 +17,11 @@ Cryptlex On-premise can be deployed in:
 
 | Topic                                                                        | Description                          |
 | ---------------------------------------------------------------------------- | ------------------------------------ |
-| [docs/overview.md](docs/000-overview.md)                                     | Overview of Cryptlex On-premise      |
-| [docs/system-requirements.md](docs/system-requirements.md)                   | Hardware and software requirements   |
-| [docs/server-layout.md](docs/server-layout.md)                               | Recommended deployment architectures |
-| [docs/configuring-client-libraries.md](docs/configuring-client-libraries.md) | Configure SDKs for On-premise        |
-| [docs/monitoring-your-instance.md](docs/monitoring-your-instance.md)         | Monitoring and observability setup   |
+ | [docs/000-overview.md](docs/000-overview.md)                                     | Overview of Cryptlex On-premise      |
+ | [docs/010-system-requirements.md](docs/010-system-requirements.md)               | Hardware and software requirements   |
+ | [docs/000-overview.md#server-layout](docs/000-overview.md#server-layout)         | Recommended deployment architectures |
+ | [docs/025-configuring-client-libraries.md](docs/025-configuring-client-libraries.md) | Configure SDKs for On-premise        |
+ | [docs/030-monitoring-your-instance.md](docs/030-monitoring-your-instance.md)     | Monitoring and observability setup   |
 
 ---
 
@@ -107,7 +107,7 @@ Features:
 
 By default, Cryptlex SDKs communicate with `api.cryptlex.com`.
 
-For On-premise deployments, configure your applications to use your self hosted Cryptlex endpoint.
+For On-premise deployments, configure your applications to use your self-hosted Cryptlex endpoint.
 
 Example using LexActivator:
 
@@ -117,7 +117,7 @@ status = SetCryptlexHost("https://cryptlex-api.mycompany.com");
 
 See:
 
-* [Confirguring client libraries](docs/025-configuring-client-libraries.md)
+* [Configuring client libraries](docs/025-configuring-client-libraries.md)
 
 ---
 

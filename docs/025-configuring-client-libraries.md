@@ -29,14 +29,14 @@ if (LA_OK != status)
 
 Similarly you can use the `SetCryptlexHost()` LexActivator API function for other programming languages.
 
-**Note:** The only additional configuration required for On Premise deployments is setting the Cryptlex host using `SetCryptlexHost()` to point to your On Premise Web API endpoint. Apart from this change, the integration and usage of LexActivator remains the same as described in our ["Using LexActivator"](https://cryptlex.com/docs/node-locked-licenses/using-lexactivator) guide.
+**Note:** The only additional configuration required for On Premise deployments is setting the Cryptlex host using `SetCryptlexHost()` to point to your On-premise Web API endpoint. Apart from this change, the integration and usage of LexActivator remains the same as described in our ["Using LexActivator"](https://cryptlex.com/docs/node-locked-licenses/using-lexactivator) guide.
 
 
 ## LexFloatServer
 
 By default, LexFloatServer will send its own license activation request to **api.cryptlex.com**
 
-In order to configure LexFloatServer to send the license activation requests to your On-Premise installation, you should update **cryptlexHost** property in the LexFloatServer config.yml file:
+In order to configure LexFloatServer to send the license activation requests to your On-premise installation, you should update **cryptlexHost** property in the LexFloatServer `config.yml` file:
 
 ```bash
 server:

@@ -4,8 +4,8 @@
 
 To get started with your Cryptlex On-premise installation, you will need the following things prepared in advance:
 
-- If this is your first time installing Cryptlex On-premise, you’ll need to [contact us](mailto:support@cryptlex.com) to schedule a guided installation. We’ll get you set up with a license key, and walk you through the installation process.
-- A server meeting the [minimum system requirements](/docs/010-system-requirements.md).
+- If this is your first time installing Cryptlex On-premise, you will need to [contact us](mailto:support@cryptlex.com) to schedule a guided installation. We’ll get you set up with a license key, and walk you through the installation process.
+- A server meeting the [minimum system requirements](../010-system-requirements.md).
 
 ## Installation
 
@@ -77,7 +77,6 @@ The `.env` file contains the following environment variables which you may need 
 | `FILE_STORE_ACCESS_KEY`  | Access key for the file store.                                                                                         |
 | `FILE_STORE_SECRET_KEY`  | The secret key for the file store.                                                                                     |
 | `GOOGLE_CLIENT_ID`       | This is needed in case you want to enable Google SSO.                                                                  |
-| `TRAEFIK_BASIC_AUTH`     | [Traefik](https://traefik.io/) is the reverse proxy. You can set the basic auth credentials for the Traefik dashboard. |
 
 **Update `webapi.env` file**
 
@@ -165,21 +164,13 @@ This service runs the Cryptlex customer portal.
 
 #### Release server service
 
-It handles the upload and download of releases you create in Cryptlex. In case you do not want to use Cryptlex [release management](/docs/release-management/creating-releases) API, this service can be commented out in the `docker-compose.yml` file.
+ It handles the upload and download of releases you create in Cryptlex. In case you do not want to use Cryptlex [release management](https://cryptlex.com/docs/release-management/creating-releases) API, this service can be commented out in the `docker-compose.yml` file.
 
 #### Reverse proxy service
 
-It uses [Traefik](https://traefik.io/) reverse proxy server to route the traffic and automatically generates and renews the SSL certificates for the `WEB_API_DOMAIN` , `RELEASE_SERVER_DOMAIN`, `ADMIN_PORTAL_DOMAIN`, `RESELLER_PORTAL_DOMAIN and CUSTOMER_PORTAL_DOMAIN`.
-
-### Traefik admin dashboard
-
-Traefik provides a dashboard that can be used to monitor the health and status of the self-hosted Cryptlex instance. You can access the Traefik dashboard at the following URL: **https://cryptlex-admin-portal.mycompany.com/traefik**
-
-You will need to put in the credentials set in the `.env` file to access the dashboard.
+It uses [Traefik](https://traefik.io/) reverse proxy server to route the traffic and automatically generates and renews the SSL certificates for the `WEB_API_DOMAIN` , `RELEASE_SERVER_DOMAIN`, `ADMIN_PORTAL_DOMAIN`, `RESELLER_PORTAL_DOMAIN` and `CUSTOMER_PORTAL_DOMAIN`.
 
 ### Checking logs
-
-Docker compose writes the **stdout** and **stderr** logs of each container in a JSON file located in `/var/lib/docker/containers/[container-id]/[container-id]-json.log.`
 
 To prevent logs from taking up the whole disk space, `20MB` limit has been applied to all the containers in the `docker-compose.yml` file. You can change that as per your requirements.
 

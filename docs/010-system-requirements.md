@@ -8,7 +8,7 @@ Cryptlex On-premise is deployed using Docker. Hence it can be deployed on any Li
 
 Cryptlex requires a minimum of 5GB to function for its database and docker images. Your exact storage size requirements will vary depending on the volume of licenses and the number of activations.
 
-Cryptlex requires at least 1GB of memory to function. If the database is also installed on the same server then at least 4GB of memory is required.
+Cryptlex requires at least 3GB of memory to function. If the database is also installed on the same server then at least 6GB of memory is required.
 
 ## CPU
 
@@ -26,7 +26,7 @@ Cryptlex requires PostgreSQL 13.x (or higher) for storing all the data.
 
 ### Cache
 
-Cryptlex uses Valkey (Redis) for storing the cache data. If no Valkey database is provided it defaults to memory.
+Cryptlex uses Valkey (Redis) for storing the cache data.
 
 ### Filestore
 
