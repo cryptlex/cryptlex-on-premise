@@ -26,7 +26,7 @@ flowchart TB
 
 | Service           | Purpose                                                |
 | ----------------- | ------------------------------------------------------ |
-| `web-api`         | Core Cryptlex Web API                                  |
+| `web-api`         | Cryptlex Web API                                       |
 | `admin-portal`    | Admin Portal                                           |
 | `customer-portal` | Customer Portal                                        |
 | `reseller-portal` | Reseller Portal                                        |
