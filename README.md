@@ -80,7 +80,7 @@ chmod 600 acme.json
 | --------------------------------------------------- | ----------------------------------------------------------- |
 | `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Database name and credentials.                              |
 | `EMAIL`                                             | Email address for SSL certificate notifications.            |
-| `*_DOMAIN` (five variables)                         | The five domains created in step 1.                         |
+| `WEB_API_DOMAIN`, `ADMIN_PORTAL_DOMAIN`, `CUSTOMER_PORTAL_DOMAIN`, `RESELLER_PORTAL_DOMAIN`, `RELEASE_SERVER_DOMAIN` | The five domains created in step 1.                         |
 | `FILE_STORE_ACCESS_KEY`, `FILE_STORE_SECRET_KEY`    | Credentials for the file store.                             |
 | `GOOGLE_CLIENT_ID`                                  | Optional, only needed to enable Google SSO.                 |
 | `MAXMIND_ACCOUNT_ID`, `MAXMIND_LICENSE_KEY`         | Optional, MaxMind credentials for GeoIP.                    |
