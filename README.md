@@ -1,37 +1,51 @@
 # Cryptlex On-premise
 
-Self-host the complete Cryptlex platform — web API, portals, release server, database, cache, and file store — on a single server using Docker Compose. It has all the features of SaaS Cryptlex, and regular releases keep you up to date.
+Self-host the complete Cryptlex platform (Web API, Web Portals, Release Server, database, cache, and file store) on a single server using Docker Compose. It has all the features of SaaS Cryptlex, and regular releases keep you up to date.
 
 This repository is for single-server deployments. For high-availability deployments on Kubernetes, use the [Cryptlex Helm charts](https://github.com/cryptlex/helm-charts).
 
 ## Architecture
 
-![Single Server Layout](assets/cryptlex-on-premise.png)
+```mermaid
+flowchart TB
+    clients([Browsers / SDKs]) -- "HTTPS (80/443)" --> proxy["reverse-proxy<br>(Traefik)"]
+
+    proxy --> api[web-api]
+    proxy --> admin[admin-portal]
+    proxy --> customer[customer-portal]
+    proxy --> reseller[reseller-portal]
+    proxy --> release[release-server]
+
+    api --> db[("database<br>(PostgreSQL)")]
+    api --> cache[("cache<br>(Valkey)")]
+    release --> api
+    release --> store[("filestore<br>(MinIO)")]
+```
 
 `docker-compose.yml` defines the following services:
 
 | Service           | Purpose                                                |
 | ----------------- | ------------------------------------------------------ |
-| `web-api`         | Core Cryptlex web API                                  |
-| `admin-portal`    | Admin portal                                           |
-| `customer-portal` | Customer portal                                        |
-| `reseller-portal` | Reseller portal                                        |
+| `web-api`         | Core Cryptlex Web API                                  |
+| `admin-portal`    | Admin Portal                                           |
+| `customer-portal` | Customer Portal                                        |
+| `reseller-portal` | Reseller Portal                                        |
 | `release-server`  | Handles upload and download of releases                |
 | `database`        | PostgreSQL database storing all Cryptlex data          |
 | `cache`           | Valkey (Redis-compatible) cache                        |
 | `filestore`       | MinIO, S3-compatible object storage for release files  |
-| `reverse-proxy`   | Traefik — routes traffic and manages SSL certificates  |
+| `reverse-proxy`   | Traefik, routes traffic and manages SSL certificates   |
 
 If you don't use [release management](https://cryptlex.com/docs/release-management/overview), you can comment out the `release-server` and `filestore` services in `docker-compose.yml`.
 
 ## Requirements
 
-- A Cryptlex license key and access to the private Docker images. If you are installing for the first time, [contact us](mailto:support@cryptlex.com) to schedule a guided installation.
-- A server (Linux, Windows, or macOS) with:
+- A Cryptlex license key and access to the private Docker images. If you are installing for the first time, [contact us](https://cryptlex.com/contact) to schedule a guided installation.
+- A server (Linux or Windows) with:
   - Docker 20.10.22 or higher
   - dual-core CPU (quad-core recommended for higher volumes)
   - 6 GB memory
-  - 5 GB+ storage (grows with the number of licenses and activations)
+  - 20 GB+ storage (grows with the number of licenses and activations)
 - Ports 80 and 443 reachable from the internet, required by Let's Encrypt to issue SSL certificates. To use your own certificates instead, see [Custom SSL certificates](#custom-ssl-certificates).
 
 ## Installation
@@ -68,14 +82,14 @@ chmod 600 acme.json
 | `EMAIL`                                             | Email address for SSL certificate notifications.            |
 | `*_DOMAIN` (five variables)                         | The five domains created in step 1.                         |
 | `FILE_STORE_ACCESS_KEY`, `FILE_STORE_SECRET_KEY`    | Credentials for the file store.                             |
-| `GOOGLE_CLIENT_ID`                                  | Optional — only needed to enable Google SSO.                |
-| `MAXMIND_ACCOUNT_ID`, `MAXMIND_LICENSE_KEY`         | Optional — MaxMind credentials for GeoIP.                   |
+| `GOOGLE_CLIENT_ID`                                  | Optional, only needed to enable Google SSO.                 |
+| `MAXMIND_ACCOUNT_ID`, `MAXMIND_LICENSE_KEY`         | Optional, MaxMind credentials for GeoIP.                    |
 
 **`web-api.env`**
 
 | Variable                  | Description                                                                                      |
 | ------------------------- | ------------------------------------------------------------------------------------------------ |
-| `ENCRYPTION_KEY`          | Any random string — used to encrypt the private keys and other secrets stored in the database.   |
+| `ENCRYPTION_KEY`          | Any random string, used to encrypt the private keys and other secrets stored in the database.    |
 | `RSA_PASSPHRASE`          | Same value as `ENCRYPTION_KEY`. Deprecated; will be removed in a future release.                 |
 | `APPLICATION_LICENSE_KEY` | The license key for your on-premise Cryptlex server.                                             |
 
@@ -117,15 +131,15 @@ To use your own SSL certificates instead of Let's Encrypt, follow the steps in [
 
 ## Configuring client libraries
 
-By default, Cryptlex SDKs send requests to `api.cryptlex.com`. Point them to your on-premise web API endpoint instead — this is the only integration change; everything else works as described in [Using LexActivator](https://cryptlex.com/docs/node-locked-licenses/using-lexactivator).
+By default, Cryptlex SDKs send requests to `api.cryptlex.com`. Point them to your on-premise Web API endpoint instead. This is the only integration change; everything else works as described in [Using LexActivator](https://cryptlex.com/docs/node-locked-licenses/using-lexactivator).
 
-**LexActivator** — call `SetCryptlexHost()` (available in all language bindings):
+**LexActivator**: call `SetCryptlexHost()` (available in all language bindings):
 
 ```c
 status = SetCryptlexHost("https://cryptlex-api.mycompany.com");
 ```
 
-**LexFloatServer** — set `cryptlexHost` in its `config.yml`:
+**LexFloatServer**: set `cryptlexHost` in its `config.yml`:
 
 ```yaml
 server:
@@ -144,21 +158,21 @@ The script pulls the latest images and restarts the updated services; average do
 
 ## Monitoring
 
-Cryptlex integrates with [OpenTelemetry](https://opentelemetry.io/) to collect metrics and traces from your instance, which you can export to any OTel-compatible backend — Grafana, Datadog, New Relic, Elastic, Splunk, etc. — to monitor health, set up alerts, and troubleshoot issues.
+Cryptlex integrates with [OpenTelemetry](https://opentelemetry.io/) to collect logs, metrics, and traces from your instance, which you can export to any OTel-compatible backend (Grafana, Datadog, New Relic, Elastic, Splunk, etc.) to monitor health, set up alerts, and troubleshoot issues.
 
 To enable it, uncomment and set the following variables in `web-api.env`:
 
 | Variable                       | Description                                                            |
 | ------------------------------ | ---------------------------------------------------------------------- |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`  | OTLP endpoint of your monitoring backend.                              |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`  | OTLP endpoint of your monitoring backend. Logs are always exported once this is set. |
 | `OTEL_ENABLEMETRICS`           | Set to `true` to export metrics.                                       |
 | `OTEL_ENABLETRACES`            | Set to `true` to export traces.                                        |
 | `OTEL_EXPORTER_OTLP_HEADERS`   | Headers for backend authentication, as comma-separated `key=value` pairs. |
 
 ## Support
 
-For assistance, enterprise inquiries, or deployment guidance, contact [support@cryptlex.com](mailto:support@cryptlex.com).
+For assistance, enterprise inquiries, or deployment guidance, [contact us](https://cryptlex.com/contact).
 
 ## License
 
-Commercial software — contact Cryptlex for licensing details.
+Commercial software. Contact Cryptlex for licensing details.
