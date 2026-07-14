@@ -8,7 +8,7 @@ This repository is for single-server deployments. For high-availability deployme
 
 ```mermaid
 flowchart TB
-    clients([Browsers / SDKs]) -- "HTTPS (80/443)" --> proxy["reverse-proxy<br>(Traefik)"]
+    clients([Browsers / SDKs]) -- "HTTPS (443), HTTP (80) redirects to HTTPS" --> proxy["reverse-proxy<br>(Traefik)"]
 
     proxy --> api[web-api]
     proxy --> admin[admin-portal]
@@ -41,7 +41,7 @@ If you don't use [release management](https://cryptlex.com/docs/release-manageme
 ## Requirements
 
 - A Cryptlex license key and access to the private Docker images. If you are installing for the first time, [contact us](https://cryptlex.com/contact) to schedule a guided installation.
-- A server (Linux or Windows) with:
+- A Linux server with:
   - Docker 20.10.22 or higher
   - dual-core CPU (quad-core recommended for higher volumes)
   - 6 GB memory
