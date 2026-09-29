@@ -198,17 +198,29 @@ There is no `helm repo add` step. Helm reads an OCI reference directly, and reso
 
 `--atomic` rolls the release back automatically if it does not complete within the timeout.
 
-To keep secrets out of `values.yaml`, for example when deploying from CI, pass them with `--set` instead:
+To keep secrets out of `values.yaml`, for example when deploying from CI, put them in a second values file that is never committed, such as one your CI writes from its secret store:
+
+```yaml
+# secrets.yaml
+imageCredentials:
+  password: "<docker-password>"
+webApi:
+  databaseUrl: "postgres://<user>:<password>@<hostname>:5432/<database-name>"
+  encryptionKey: "<random-string>"
+  email:
+    smtp:
+      password: "<smtp-password>"
+```
+
+Pass both files; values in later files override earlier ones:
 
 ```bash
-helm upgrade --install cryptlex-enterprise --values values.yaml \
+helm upgrade --install cryptlex-enterprise --values values.yaml --values secrets.yaml \
   --timeout 10m0s --atomic --create-namespace --namespace cryptlex \
-  oci://registry-1.docker.io/cryptlex/cryptlex-enterprise \
-  --set imageCredentials.password=$DOCKER_PASSWORD \
-  --set webApi.databaseUrl=$DATABASE_URL \
-  --set webApi.encryptionKey=$ENCRYPTION_KEY \
-  --set webApi.email.smtp.password=$SMTP_PASSWORD
+  oci://registry-1.docker.io/cryptlex/cryptlex-enterprise
 ```
+
+Quote each value so YAML keeps it as a string. Avoid `--set` for secrets: Helm splits its value on commas and converts types, which can corrupt passwords and connection strings.
 
 Verify that all pods reach the `Running` state:
 
@@ -259,10 +271,10 @@ helm upgrade --install cryptlex-enterprise --values values.yaml \
   oci://registry-1.docker.io/cryptlex/cryptlex-enterprise
 ```
 
-Without `--version` this installs the newest published chart. Pin one with `--version <version>` if you want to control when upgrades happen. To see what is available:
+Without `--version` this installs the newest published chart. Pin one with `--version <version>` if you want to control when upgrades happen. Published versions are listed on the chart's [Docker Hub tags page](https://hub.docker.com/r/cryptlex/cryptlex-enterprise/tags); sign in with the account that has access to the Cryptlex images. To inspect a specific version:
 
 ```bash
-helm show chart oci://registry-1.docker.io/cryptlex/cryptlex-enterprise
+helm show chart oci://registry-1.docker.io/cryptlex/cryptlex-enterprise --version <version>
 ```
 
 > **Note:** The chart pins the in-cluster PostgreSQL version. Once the database has data, moving to a newer major version requires a database migration.
