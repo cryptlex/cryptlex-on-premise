@@ -120,7 +120,7 @@ services:
       - traefik.http.services.web-api.loadbalancer.server.port=5000
 
   admin-portal:
-    image: cryptlex/admin-portal:latest
+    image: cryptlex/cryptlex-admin-portal-enterprise:latest
     depends_on:
       - web-api
     environment:
@@ -139,7 +139,7 @@ services:
       - traefik.http.services.admin-portal.loadbalancer.server.port=4400
 
   customer-portal:
-    image: cryptlex/customer-portal:latest
+    image: cryptlex/cryptlex-customer-portal-enterprise:latest
     depends_on:
       - web-api
     environment:
@@ -158,7 +158,7 @@ services:
       - traefik.http.services.customer-portal.loadbalancer.server.port=4401
 
   reseller-portal:
-    image: cryptlex/reseller-portal:latest
+    image: cryptlex/cryptlex-reseller-portal-enterprise:latest
     depends_on:
       - web-api
     environment:
@@ -177,7 +177,7 @@ services:
       - traefik.http.services.reseller-portal.loadbalancer.server.port=4402
 
   release-server:
-    image: cryptlex/cryptlex-release-server:latest
+    image: cryptlex/cryptlex-release-server-enterprise:latest
     depends_on:
       - web-api
     env_file: release-server.env
